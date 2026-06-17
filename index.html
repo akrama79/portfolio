@@ -3,10 +3,40 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Akrama Nadim — Builder</title>
+<title>Akrama Nadim · AI &amp; Software Developer</title>
+<link rel="icon" id="favicon" type="image/png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@300;400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    const r = 14;
+    ctx.beginPath();
+    ctx.moveTo(r, 0); ctx.lineTo(64-r, 0);
+    ctx.quadraticCurveTo(64, 0, 64, r);
+    ctx.lineTo(64, 64-r);
+    ctx.quadraticCurveTo(64, 64, 64-r, 64);
+    ctx.lineTo(r, 64);
+    ctx.quadraticCurveTo(0, 64, 0, 64-r);
+    ctx.lineTo(0, r);
+    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.closePath();
+    ctx.fillStyle = '#1e2124';
+    ctx.fill();
+    ctx.strokeStyle = '#3a5160';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = '#8faab8';
+    ctx.font = 'bold 26px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('AN', 32, 33);
+    document.getElementById('favicon').href = canvas.toDataURL('image/png');
+  });
+<\/script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -56,6 +86,18 @@
     pointer-events: none;
     z-index: 9998;
     transition: transform 0.18s ease, width 0.2s, height 0.2s;
+  }
+
+  /* ─── TORCH SPOTLIGHT ─── */
+  #torch-spotlight {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.4s ease;
+    opacity: 0;
+    mix-blend-mode: screen;
   }
 
   /* ─── NAV ─── */
@@ -644,6 +686,7 @@
 
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursor-ring"></div>
+<div id="torch-spotlight"></div>
 
 <!-- NAV -->
 <nav id="nav">
@@ -1060,6 +1103,44 @@
     requestAnimationFrame(animateRing);
   }
   animateRing();
+
+  // Torch spotlight effect — dramatic version
+  const torch = document.getElementById('torch-spotlight');
+  let torchX = window.innerWidth / 2;
+  let torchY = window.innerHeight / 2;
+  let smoothX = torchX, smoothY = torchY;
+  let torchVisible = false;
+
+  document.addEventListener('mousemove', e => {
+    torchX = e.clientX;
+    torchY = e.clientY;
+    if (!torchVisible) {
+      torch.style.opacity = '1';
+      torchVisible = true;
+    }
+  });
+
+  document.addEventListener('mouseleave', () => {
+    torch.style.opacity = '0';
+    torchVisible = false;
+  });
+
+  function animateTorch() {
+    smoothX += (torchX - smoothX) * 0.08;
+    smoothY += (torchY - smoothY) * 0.08;
+    torch.style.background = `
+      radial-gradient(
+        circle 180px at ${smoothX}px ${smoothY}px,
+        rgba(220, 235, 245, 0.22) 0%,
+        rgba(180, 210, 230, 0.15) 20%,
+        rgba(143, 170, 184, 0.09) 45%,
+        rgba(100, 140, 165, 0.04) 70%,
+        transparent 100%
+      )
+    `;
+    requestAnimationFrame(animateTorch);
+  }
+  animateTorch();
 
   document.querySelectorAll('a, button').forEach(el => {
     el.addEventListener('mouseenter', () => {
